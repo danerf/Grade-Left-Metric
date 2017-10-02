@@ -120,3 +120,32 @@ Sub ShowMeTheMoney()
     Loop
     
 End Sub
+
+Function FnImageInsert(strCompleteImagePath)
+
+   Dim objWord
+
+   Dim objDoc
+
+   Dim objSelection
+
+ Dim objShapes
+
+   Set objWord = CreateObject("Word.Application")
+
+   Set objDoc = objWord.Documents.Open("D:\GradeLiftCharts.docx")
+
+   objWord.Visible = True
+
+   Set objSelection = objWord.Selection
+
+   'objSelection.TypeText (vbCrLf & "One Picture will be inserted here....")
+
+   Set objShapes = objDoc.InlineShapes
+
+ objShapes.AddPicture (strCompleteImagePath)
+
+ objDoc.Close True
+
+End Function
+
