@@ -10,4 +10,4 @@ If the Grade Lift Metric for a given course is positive, then the grading for th
 
 An example of the result of running the code Grade_Lift_Metric() is shown in the word document called GradeLiftCharts.docx
 
-
+Grades.xlsm is a template for storing student grades, it is where Grade_Lift_Metric() obtains extracts data.
