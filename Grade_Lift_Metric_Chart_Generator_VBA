@@ -1,0 +1,122 @@
+Rem Attribute VBA_ModuleType=VBAModule
+Option VBASupport 1
+Sub ShowMeTheMoney()
+
+    Dim Path As String
+    Dim Filename As String
+    Dim WB As Workbook
+    
+    Path = "D:\"
+    Filename = Dir(Path & "*.xlsx")
+
+    Do While Filename <> ""
+     
+        Set WB = Workbooks.Open(Path & Filename)
+        
+        Dim CellsContainingMark As Range
+        Dim WSx As Integer
+        Dim CountCellsContainingMark As Integer
+    
+        WSx = ActiveWorkbook.Worksheets.Count
+    
+        For k = 1 To WSx
+        
+            CountCellsContainingMark = Application.WorksheetFunction.CountIf(Worksheets(k).UsedRange, "Mark")
+        
+            CellsContainingMarkIndex = 1
+            
+            If CountCellsContainingMark > 0 Then
+            
+                With Worksheets(k).UsedRange
+                
+                        Dim ModAve() As Double
+                        ReDim ModAve(CellsContainingMarkIndex To CountCellsContainingMark) As Double
+                        Dim ModAveCounter As Long
+                        Dim ModAveTotal As Double
+                        Dim ModAveAve As Double
+                        Dim GradeLift() As Double
+                        ReDim GradeLift(LBound(ModAve) To UBound(ModAve))
+                        Dim xvalchartrow() As Variant
+                        ReDim xvalchartrow(LBound(ModAve) To UBound(ModAve))
+                        Dim xvalchartcol() As Variant
+                        ReDim xvalchartcol(LBound(ModAve) To UBound(ModAve))
+                        Dim xvalchart() As Variant
+                        ReDim xvalchart(LBound(ModAve) To UBound(ModAve))
+                        Dim GradeLiftChart As ChartObject
+                
+                        Set CellsContainingMark = Worksheets(k).Cells.Find(What:="Mark", LookIn:=xlValues, LookAt:=xlWhole)
+ 
+                        For CellsContainingMarkIndex = 1 To CountCellsContainingMark
+        
+                            ModAve(CellsContainingMarkIndex) = Application.WorksheetFunction.Average(Worksheets(k).Columns(CellsContainingMark.Column))
+                        
+                            Set CellsContainingMark = Worksheets(k).Cells.FindNext(CellsContainingMark)
+                    
+                        Next CellsContainingMarkIndex
+                                                
+                        ModAveTotal = 0
+                
+                        For ModAveCounter = 1 To UBound(ModAve)
+                
+                            ModAveTotal = ModAveTotal + ModAve(ModAveCounter)
+                    
+                        Next
+                
+                        ModAveAve = ModAveTotal / UBound(ModAve)
+                                               
+                        For n = LBound(ModAve) To UBound(ModAve)
+                    
+                            GradeLift(n) = ModAve(n) - ModAveAve
+                            xvalchartrow(n) = CellsContainingMark.Row - 1
+                            xvalchartcol(n) = CellsContainingMark.Column
+                            xvalchart(n) = Worksheets(k).Cells(xvalchartrow(n), xvalchartcol(n)).Value
+                            Set CellsContainingMark = Worksheets(k).Cells.FindNext(CellsContainingMark)
+                    
+                        Next n
+                   
+                        With Worksheets(k)
+                
+                            Set GradeLiftChart = .ChartObjects.Add(10, 20, 500, 200)
+                            GradeLiftChart.Chart.ChartWizard .Cells(1)
+                            GradeLiftChart.Chart.SeriesCollection(1).Values = GradeLift
+                            GradeLiftChart.Chart.SeriesCollection(1).XValues = xvalchart
+                            
+                            With GradeLiftChart
+                                .Chart.HasTitle = True
+                                .Chart.ChartTitle.Text = Worksheets(k).Range("A1")
+                            End With
+            
+                        End With
+
+
+                        Dim objChrt As ChartObject
+                        Dim myChart As Chart
+
+                        Set objChrt = Worksheets(k).ChartObjects(1)
+                        Set myChart = objChrt.Chart
+
+                        myFileName = "myChart" & k & Filename & ".png"
+
+                        On Error Resume Next
+                        Kill ThisWorkbook.Path & "\" & myFileName
+                        On Error GoTo 0
+
+                        myChart.Export Filename:=ThisWorkbook.Path & "\" & myFileName, Filtername:="PNG"
+                        
+                        Call FnImageInsert("C:\Users\d.ferhadi\Documents\Stats\Excel Visual Basic\myChart" & k & Filename & ".PNG")
+                        
+                End With
+                
+            End If
+            
+            Set CellsContainingMark = Nothing
+           
+        Next k
+
+        WB.Close True
+        
+        Filename = Dir
+        
+    Loop
+    
+End Sub
