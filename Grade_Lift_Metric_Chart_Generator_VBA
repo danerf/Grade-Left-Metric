@@ -129,7 +129,7 @@ Function FnImageInsert(strCompleteImagePath)
 
    Dim objSelection
 
- Dim objShapes
+   Dim objShapes
 
    Set objWord = CreateObject("Word.Application")
 
